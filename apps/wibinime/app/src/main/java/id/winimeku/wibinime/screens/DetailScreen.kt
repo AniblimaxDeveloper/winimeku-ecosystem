@@ -5,13 +5,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -94,13 +95,29 @@ fun DetailScreen(animeId: String, onPlayEpisode: (Episode) -> Unit, onBack: () -
                         }
                     }
                     items(anime!!.episodes ?: emptyList()) { episode ->
-                        ListTile(
-                            modifier = Modifier.clickable { onPlayEpisode(episode) },
-                            leading = Icon(Icons.Filled.PlayArrow, contentDescription = null, tint = Color.White),
-                            title = Text("Episode ${episode.episodeNumber}", color = Color.White),
-                            subtitle = Text(episode.title ?: "Tanpa Judul", color = Color.Gray),
-                            trailing = Icon(Icons.Filled.PlayCircle, contentDescription = null, tint = Color.Red)
-                        )
+                        // Desain Kustom Pengganti ListTile (Bebas Error & Lebih Premium)
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { onPlayEpisode(episode) }
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(Color(0xFF1E1E1E))
+                                .padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.PlayArrow,
+                                contentDescription = "Play",
+                                tint = Color.Red,
+                                modifier = Modifier.size(32.dp)
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Column {
+                                Text("Episode ${episode.episodeNumber}", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                                Text(episode.title ?: "Tanpa Judul", color = Color.Gray, fontSize = 14.sp)
+                            }
+                        }
                     }
                 }
             }
