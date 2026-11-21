@@ -1,27 +1,26 @@
 import fastify from 'fastify';
 import cors from 'fastify-cors';
+import jwt from '@fastify/jwt';
+import authRoutes from './routes/auth';
+import { authenticate } from './middleware/auth';
 
 const server = fastify({ logger: true });
 
 server.register(cors, { origin: '*' });
 
-// Health Check Endpoint
-server.get('/api/v1/app/health', async (request, reply) => {
-  return { 
-    status: 'ok', 
-    service: 'Winimeku Core System', 
-    timestamp: new Date().toISOString() 
-  };
+// Daftarkan JWT
+server.register(jwt, {
+  secret: process.env.JWT_SECRET || 'rahasia-super-panjang-default'
 });
 
-// Placeholder untuk Auth & Endpoint lain (Akan diisi di Phase 2)
-server.get('/api/v1/app/config', async (request, reply) => {
-  return {
-    appName: 'Wibinime',
-    maintenanceMode: false,
-    minimumVersion: '1.0.0'
-  };
-});
+// Dekorasi server dengan fungsi authenticate
+server.decorate('authenticate', authenticate);
+
+// Health Check
+server.get('/api/v1/app/health', async () => ({ status: 'ok', service: 'Winimeku Core' }));
+
+// Daftarkan Rute Auth
+server.register(authRoutes, { prefix: '/api/v1/auth' });
 
 const start = async () => {
   try {
