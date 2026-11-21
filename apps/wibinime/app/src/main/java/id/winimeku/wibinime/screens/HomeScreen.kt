@@ -1,6 +1,7 @@
 package id.winimeku.wibinime.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -25,14 +26,13 @@ import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen() {
+fun HomeScreen(onAnimeClick: (String) -> Unit) {
     var animeList by remember { mutableStateOf<List<Anime>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
     var errorMsg by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
         isLoading = true
-        errorMsg = null
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response = ApiClient.instance.getAnimeList()
@@ -55,10 +55,7 @@ fun HomeScreen() {
         topBar = {
             TopAppBar(
                 title = { Text("WIBINIME", fontWeight = FontWeight.Bold, letterSpacing = 2.sp) },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Black,
-                    titleContentColor = Color.White
-                )
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Black, titleContentColor = Color.White)
             )
         },
         containerColor = Color.Black
@@ -76,7 +73,7 @@ fun HomeScreen() {
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(animeList) { anime ->
-                        AnimeCard(anime)
+                        AnimeCard(anime, onClick = { onAnimeClick(anime.id) })
                     }
                 }
             }
@@ -85,11 +82,11 @@ fun HomeScreen() {
 }
 
 @Composable
-fun AnimeCard(anime: Anime) {
+fun AnimeCard(anime: Anime, onClick: () -> Unit) {
     Card(
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E)),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth().clickable { onClick() }
     ) {
         Row(modifier = Modifier.padding(12.dp)) {
             AsyncImage(
