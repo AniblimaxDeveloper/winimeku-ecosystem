@@ -16,7 +16,6 @@ import id.winimeku.wibinime.network.Episode
 
 @Composable
 fun PlayerScreen(episode: Episode, onBack: () -> Unit) {
-    // Inisialisasi ExoPlayer
     val context = androidx.compose.ui.platform.LocalContext.current
     val exoPlayer = remember {
         ExoPlayer.Builder(context).build().apply {
@@ -26,7 +25,6 @@ fun PlayerScreen(episode: Episode, onBack: () -> Unit) {
         }
     }
 
-    // Bersihkan player saat layar ditutup
     DisposableEffect(Unit) {
         onDispose {
             exoPlayer.release()
